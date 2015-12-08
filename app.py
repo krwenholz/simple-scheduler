@@ -1,10 +1,9 @@
 from flask import Flask
-import time
 app = Flask(__name__)
 
-@app.route("/")
+@app.route('/')
 def hello():
-    return("Hello my beautiful world")
+    return 'Hello my beautiful world'
 
-if __name__ == "__main__":
-        app.run()
+if __name__ == '__main__':
+        app.run(port=8080)
