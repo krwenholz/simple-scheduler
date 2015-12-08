@@ -1,1 +1,7 @@
-This should be good
+Design decisions
+================
+
+Regrets
+-------
+None! Just kidding.
+* I should have named it scheduling. It's much more accurate.
