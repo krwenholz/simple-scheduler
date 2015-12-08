@@ -1,11 +1,6 @@
-# Import your application as:
-# from app import application
-# Example:
-
 from app import app
-
-# Import CherryPy
 import cherrypy
+import sys
 
 if __name__ == '__main__':
 
@@ -20,7 +15,10 @@ if __name__ == '__main__':
 
     # Configure the server object
     server.socket_host = "0.0.0.0"
-    server.socket_port = 8080
+    if len(sys.argv) > 1:
+        server.socket_port = int(sys.argv[1])
+    else:
+        server.socket_port = 80
     server.thread_pool = 30
 
     # For SSL Support
