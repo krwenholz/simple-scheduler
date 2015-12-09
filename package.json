@@ -3,6 +3,12 @@
   "version": "0.0.0",
   "description": "Design decisions ================",
   "main": "index.js",
+  "dependencies": {
+    "bower": "~1.7.0"
+  },
+  "devDependencies": {
+    "bower": "~1.7.0"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -14,8 +20,5 @@
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/krwenholz/simple-scheduler/issues"
-  },
-  "devDependencies": {
-    "bower": "~1.7.0"
   }
 }
