@@ -1,5 +1,5 @@
 # Ignore the basic Dockerfile, because AWS doesn't want it
-Dockerfile
+#Dockerfile
 
 # Don't accidentally include Bower stuff!
 *bower*
