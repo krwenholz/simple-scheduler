@@ -3,3 +3,6 @@ Dockerfile
 
 # Don't accidentally include Bower stuff!
 *bower*
+
+# Don't include compile react files
+static/scripts/js/*.js
