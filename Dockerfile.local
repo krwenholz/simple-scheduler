@@ -1,5 +1,6 @@
 FROM amazon/aws-eb-python:3.4.2-onbuild-3.5.1
 
-RUN apt-get install npm && \
+RUN apt-get update && \
+        apt-get install -y npm && \
         npm install && \
         bower install

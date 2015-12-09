@@ -14,5 +14,8 @@
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/krwenholz/simple-scheduler/issues"
+  },
+  "devDependencies": {
+    "bower": "~1.7.0"
   }
 }
