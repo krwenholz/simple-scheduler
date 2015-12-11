@@ -1,2 +1,3 @@
 # Don't include compile react files
 static/scripts/js/*.js
+bower_components
