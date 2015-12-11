@@ -21,7 +21,7 @@ def create_specialist(specialist_name):
 
 @app.route('/user/<username>', methods=['GET'])
 def get_user(username):
-    return user_store.get_user(username)
+    return str(user_store.get_user(username))
 
 if __name__ == '__main__':
     app.run(debug=True)

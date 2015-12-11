@@ -1,4 +1,5 @@
 import boto3, os 
+from boto3.dynamodb.conditions import Key
 from datetime import datetime
 
 class ConnectionManager:
@@ -32,11 +33,16 @@ class UserStore:
 
     def get_user(self, username):
         try:
-            return self.users_table.get_item(Key={'username':username})
+            items = self.users_table.query(
+                    KeyConditionExpression=Key('username').eq(username))['Items']
         except Exception as e:
             #TODO: update this error handling to be more polite with Boto3
             print('User [{}] was not found!'.format(username))
+            print('caught exception {}'.format(e))
             return None
+        if len(items) > 1:
+            raise Exception('Too many users found for username [{}]'.format(username))
+        return items[0]
 
     def create_user(self, username, user_type):
         create_date = str(datetime.now())
