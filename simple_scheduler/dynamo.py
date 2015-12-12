@@ -2,7 +2,7 @@ import boto3, os
 from boto3.dynamodb.conditions import Key
 from datetime import datetime
 
-class ConnectionManager:
+class DdbConnection:
     """
     An abstraction for establishing connections to DynamoDB and managing our
     basic tables: users and calendars
@@ -23,18 +23,19 @@ class ConnectionManager:
             raise Exception("Failed to connect to users table", e)
 
 class UserStore:
+    #TODO: I should be taking in and returning a user model object
     """
     Manages user information in DynamoDB
     TODO: I should create a namedtuple class to represent users
     """
-    def __init__(self, connection_manager):
-        self.connection_manager = connection_manager
-        self.users_table = self.connection_manager.table('simple-scheduler-users')
+    def __init__(self, ddb):
+        self.ddb = ddb
+        self.users_table = self.ddb.table('simple-scheduler-users')
 
-    def get_user(self, username):
+    def get_user(self, user_type, username):
         try:
             items = self.users_table.query(
-                    KeyConditionExpression=Key('username').eq(username))['Items']
+                    KeyConditionExpression=Key('username').eq(username) & Key('type').eq(user_type))['Items']
         except Exception as e:
             #TODO: update this error handling to be more polite with Boto3
             print('User [{}] was not found!'.format(username))
@@ -44,7 +45,7 @@ class UserStore:
             raise Exception('Too many users found for username [{}]'.format(username))
         return items[0]
 
-    def create_user(self, username, user_type):
+    def create_user(self, user_type, username):
         create_date = str(datetime.now())
         self.users_table.put_item(
                 Item={
