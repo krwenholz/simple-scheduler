@@ -1,5 +1,5 @@
 from flask import Flask, render_template, g
-from simple_scheduler.users import UsersView
+from simple_scheduler.rest_views import UsersView
 
 app = Flask(__name__, template_folder='simple_scheduler/templates')
 UsersView.register(app)

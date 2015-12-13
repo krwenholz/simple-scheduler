@@ -1,6 +1,7 @@
 import boto3, os 
 from boto3.dynamodb.conditions import Key
 from datetime import datetime
+from simple_scheduler.model.user import User
 
 class DdbConnection:
     """
@@ -20,38 +21,35 @@ class DdbConnection:
         try:
             return self.db.Table(name)
         except Exception as e:
-            raise Exception("Failed to connect to users table", e)
+            raise Exception('Failed to connect to users table', e)
 
 class UserStore:
-    #TODO: I should be taking in and returning a user model object
     """
     Manages user information in DynamoDB
     TODO: I should create a namedtuple class to represent users
     """
-    def __init__(self, ddb):
-        self.ddb = ddb
-        self.users_table = self.ddb.table('simple-scheduler-users')
+    def __init__(self):
+        connection = DdbConnection()
+        self.users_table = connection.table('simple-scheduler-users')
 
     def get_user(self, user_type, username):
         try:
-            items = self.users_table.query(
-                    KeyConditionExpression=Key('username').eq(username) & Key('type').eq(user_type))['Items']
+            return User.from_ddb(self.users_table.get_item( 
+                Key={'username':username, 'type':user_type}))
         except Exception as e:
             #TODO: update this error handling to be more polite with Boto3
+            # and retry
             print('User [{}] was not found!'.format(username))
-            print('caught exception {}'.format(e))
+            print('Caught exception {}'.format(e))
             return None
-        if len(items) > 1:
-            raise Exception('Too many users found for username [{}]'.format(username))
-        return items[0]
 
-    def create_user(self, user_type, username):
-        create_date = str(datetime.now())
+    def create_user(self, user):
         self.users_table.put_item(
                 Item={
-                    "username" : username,
-                    "type" : user_type,
-                    "create_date" : create_date
+                    'username' : user.username,
+                    'type' : user.type,
+                    'email' : user.email,
+                    'create_date' : user.create_date 
                     })
 
 
