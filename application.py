@@ -1,8 +1,9 @@
 from flask import Flask, render_template, g
-from simple_scheduler.rest_views import UsersView
+from simple_scheduler.rest_views import UsersView, EventsView
 
 app = Flask(__name__, template_folder='simple_scheduler/templates')
 UsersView.register(app)
+EventsView.register(app)
 
 @app.route('/')
 def index():
