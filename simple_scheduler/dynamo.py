@@ -44,7 +44,7 @@ class UserStore:
             return None
 
     def create_user(self, user):
-        self.users_table.put_item(Item=user.as_ddb_item())
+        self.users_table.put_item(Item=user.as_dict())
 
 class EventStore:
     """

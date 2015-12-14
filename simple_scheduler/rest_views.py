@@ -14,7 +14,7 @@ class UsersView(FlaskView):
         self.user_store = UserStore()
 
     def put(self, user_type, username, email):
-        self.user_store.create_user(User(user_name, user_type, email, str(datetime.now())))
+        self.user_store.create_user(User(username, user_type, email, str(datetime.datetime.now())))
         return 'success'
 
     def get(self, user_type, username):
