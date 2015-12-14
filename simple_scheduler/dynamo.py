@@ -1,5 +1,6 @@
 import boto3, os 
 from boto3.dynamodb.conditions import Key
+from boto3.exceptions import NoVersionFound, ResourceLoadException, RetriesExceededError
 from simple_scheduler.model.user import User
 from simple_scheduler.model.event import Event
 
@@ -37,11 +38,9 @@ class UserStore:
     def get_user(self, user_type, username):
         try:
             return User.from_dict(self.users_table.get_item( 
-                Key={'username':username, 'type':user_type}))
-        except Exception as e:
-            print('User [{}] was not found!'.format(username))
-            print('Caught exception {}'.format(e))
-            return None
+                Key={'username': username, 'type': user_type}))
+        except (NoVersionFound, ResourceLoadException, RetriesExceededError) as e:
+            print('Failed to get user [{}, {}]'.format(user_type, username))
 
     def create_user(self, user):
         self.users_table.put_item(Item=user.as_dict())
@@ -57,10 +56,9 @@ class EventStore:
     def get_event(self, username, starttime):
         try:
             return Event.from_dict(self.event_table.get_item( 
-                Key={'username':username, 'starttime':starttime}))
-        except Exception as e:
-            print('Event [{}, {}] was not found!'.format(username, starttime))
-            print('Caught exception {}'.format(e))
+                Key={'username': username, 'starttime': starttime}))
+        except (NoVersionFound, ResourceLoadException, RetriesExceededError) as e:
+            print('Failed to get event [{}, {}]'.format(username, starttime))
             return None
 
     def get_events(self, username, min_starttime, max_starttime):
@@ -70,16 +68,15 @@ class EventStore:
                             Key('starttime').gte(min_starttime) & \
                             Key('starttime').lte(max_starttime))['Items']
             return map(lambda ee: Event.from_ddb(ee['Item']), ddb_events)
-        except Exception as e:
-            print('Events for [{}, {}, {}] were not found!'.format(
+        except (NoVersionFound, ResourceLoadException, RetriesExceededError) as e:
+            print('Failed to get event [{}, {}, {}]'.format(
                 username, min_starttime, max_starttime))
-            print('Caught exception {}'.format(e))
             return None
 
 
     def create_event(self, event):
-        print('Trying to put event [{}]'.format(event.as_ddb_item()))
-        self.event_table.put_item(Item=event.as_ddb_item())
+        print('Trying to put event [{}]'.format(event.as_dict()))
+        self.event_table.put_item(Item=event.as_dict())
 
     def delete(self, username, starttime):
         print('Trying to delete event [{}, starttime]'.format(username, starttime))

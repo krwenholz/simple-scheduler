@@ -28,18 +28,25 @@ class EventsView(FlaskView):
         self.event_store = EventStore()
 
     def put(self, requester, username, starttime):
+        #TODO: some of the conditional put logic could be done with conditional puts to DDB
         """
         Attempts to put an event on username's calendar to meet with requester.
         Requester will receive the same event on their calendar through an
         asynchronous process.
         """
+        starttime = int(starttime)
         #TODO how do we block off full hour chunks?
+        # verify user can put event on other person or their own calendar
         user_event = self.event_store.get_event(username, starttime)
-        if (requester != username and user_event == None) or not user_event.is_free():
+        if (requester != username and user_event is None) or \
+                (user_event is not None and not user_event.is_free()):
             raise ValueError('You can not create an event where no free time exists or is not your schedule')
-        if requester == username:
-            raise ValueError('Requester can not be the same as username')
-        self.event_store.create_event(Event(username, int(starttime), requester))
+        # ensure requester isn't already booked if putting time on someone else's calendar
+        if requester != username:
+            user_event = self.event_store.get_event(requester, starttime)
+            if user_event is not None and not user_event.is_free():
+                raise ValueError('You are already booked for [{}]'.format(starttime))
+        self.event_store.create_event(Event(username, starttime, requester))
         return 'success'
 
     def delete(self, requester, username, starttime):
