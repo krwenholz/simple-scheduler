@@ -95,8 +95,6 @@ def test_put_event_overwrite_not_allowed(ddbMock):
 @patch('simple_scheduler.dynamo.DdbConnection')
 def test_put_event_requester_already_booked(ddbMock):
     event_view = prep_events_view(ddbMock)
-    event_view.event_store.event_table.results['get']['Item']['partner'] = 'coco'
-    # book the meeting
     e = None
     try:
         event_view.put('dodo', 'bobo', '1') == 'success'
@@ -104,4 +102,31 @@ def test_put_event_requester_already_booked(ddbMock):
         e = exc
     assert 'not your schedule' in e.args[0]
 
+@patch('simple_scheduler.dynamo.DdbConnection')
+def test_delete_event(ddbMock):
+    event_view = prep_events_view(ddbMock)
+    assert event_view.delete('coco', 'bobo', '1') == 'success'
 
+@patch('simple_scheduler.dynamo.DdbConnection')
+def test_delete_no_event(ddbMock):
+    event_view = prep_events_view(ddbMock)
+    # book the meeting
+    e = None
+    try:
+        event_view.delete('coco', 'janice', '1')
+    except ValueError as exc:
+        e = exc
+    assert 'No event to delete!' in e.args[0]
+
+@patch('simple_scheduler.dynamo.DdbConnection')
+def test_delete_unowned_event(ddbMock):
+    event_view = prep_events_view(ddbMock)
+    # book the meeting
+    e = None
+    try:
+        event_view.delete('janice', 'bobo', '1')
+    except ValueError as exc:
+        e = exc
+    assert 'can not cancel the event for' in e.args[0]
+
+#TODO: running out of time to test current month events, so write that if time allows

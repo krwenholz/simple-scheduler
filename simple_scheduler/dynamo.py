@@ -40,7 +40,7 @@ class UserStore:
             return User.from_dict(self.users_table.get_item( 
                 Key={'username': username, 'type': user_type}))
         except (NoVersionFound, ResourceLoadException, RetriesExceededError) as e:
-            print('Failed to get user [{}, {}]'.format(user_type, username))
+            return None
 
     def create_user(self, user):
         self.users_table.put_item(Item=user.as_dict())
@@ -58,7 +58,6 @@ class EventStore:
             return Event.from_dict(self.event_table.get_item( 
                 Key={'username': username, 'starttime': starttime}))
         except (NoVersionFound, ResourceLoadException, RetriesExceededError) as e:
-            print('Failed to get event [{}, {}]'.format(username, starttime))
             return None
 
     def get_events(self, username, min_starttime, max_starttime):
@@ -69,17 +68,13 @@ class EventStore:
                             Key('starttime').lte(max_starttime))['Items']
             return map(lambda ee: Event.from_ddb(ee['Item']), ddb_events)
         except (NoVersionFound, ResourceLoadException, RetriesExceededError) as e:
-            print('Failed to get event [{}, {}, {}]'.format(
-                username, min_starttime, max_starttime))
             return None
 
 
     def create_event(self, event):
-        print('Trying to put event [{}]'.format(event.as_dict()))
         self.event_table.put_item(Item=event.as_dict())
 
     def delete(self, username, starttime):
-        print('Trying to delete event [{}, starttime]'.format(username, starttime))
         self.event_table.delete_item(
                 Key={
                     'username' : username,

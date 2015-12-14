@@ -56,7 +56,9 @@ class EventsView(FlaskView):
         """
         starttime = int(starttime)
         user_event = self.event_store.get_event(username, starttime)
-        if (requester == user_event.partner) and (requester == user_event.username):
+        if user_event is None:
+            raise ValueError('No event to delete!')
+        if (requester != user_event.partner) and (requester != user_event.username):
             raise ValueError('[{}] can not cancel the event for [{}, {}] at [{}]'.format(
                 requester, user_event.username, user_event.partner, starttime))
         self.event_store.delete(username, starttime)
