@@ -37,8 +37,10 @@ class UserStore:
 
     def get_user(self, user_type, username):
         try:
-            return User.from_dict(self.users_table.get_item( 
-                Key={'username': username, 'type': user_type}))
+            response = self.users_table.get_item( 
+                    Key={'username': username, 'type': user_type})
+            if 'Item' not in response: return None
+            return User.from_ddb(response)
         except (NoVersionFound, ResourceLoadException, RetriesExceededError) as e:
             return None
 
@@ -55,18 +57,22 @@ class EventStore:
 
     def get_event(self, username, starttime):
         try:
-            return Event.from_dict(self.event_table.get_item( 
-                Key={'username': username, 'starttime': starttime}))
+            response = self.event_table.get_item( 
+                    Key={'username': username, 'starttime': starttime})
+            if 'Item' not in response: return None
+            return Event.from_ddb(response)
         except (NoVersionFound, ResourceLoadException, RetriesExceededError) as e:
             return None
 
     def get_events(self, username, min_starttime, max_starttime):
         try:
+            # ddb does between exclusively, so we need to bump out our bounds 
+            min_starttime -= 1
+            max_starttime += 1
             ddb_events = self.event_table.query(
                     KeyConditionExpression=Key('username').eq(username) & \
-                            Key('starttime').gte(min_starttime) & \
-                            Key('starttime').lte(max_starttime))['Items']
-            return map(lambda ee: Event.from_ddb(ee['Item']), ddb_events)
+                            Key('starttime').between(min_starttime, max_starttime))['Items']
+            return map(lambda ee: Event.from_dict(ee), ddb_events)
         except (NoVersionFound, ResourceLoadException, RetriesExceededError) as e:
             return None
 

@@ -1,4 +1,4 @@
-from flask import Flask, render_template, g
+from flask import Flask, render_template
 from simple_scheduler.rest_views import UsersView, EventsView
 
 app = Flask(__name__, template_folder='simple_scheduler/templates')

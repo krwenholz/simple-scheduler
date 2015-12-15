@@ -1,4 +1,4 @@
-from flask import request
+from flask import request, url_for
 from flask.ext.classy import FlaskView
 from simple_scheduler.dynamo import UserStore, EventStore
 from simple_scheduler.model.user import User
@@ -28,11 +28,12 @@ class EventsView(FlaskView):
         self.event_store = EventStore()
 
     def put(self, requester, username, starttime):
-        #TODO: some of the conditional put logic could be done with conditional puts to DDB
+        #TODO: some of the conditional put logic should be done with conditional puts to DDB
         """
         Attempts to put an event on username's calendar to meet with requester.
         Requester will receive the same event on their calendar through an
-        asynchronous process.
+        asynchronous process. If requester is the same as user, then the event
+        put is for free time
         """
         starttime = int(starttime)
         #TODO how do we block off full hour chunks?
@@ -46,7 +47,8 @@ class EventsView(FlaskView):
             user_event = self.event_store.get_event(requester, starttime)
             if user_event is not None and not user_event.is_free():
                 raise ValueError('You are already booked for [{}]'.format(starttime))
-        self.event_store.create_event(Event(username, starttime, requester))
+        partner = requester if requester != username else Event.FREE_TIME
+        self.event_store.create_event(Event(username, starttime, partner))
         return 'success'
 
     def delete(self, requester, username, starttime):
@@ -66,16 +68,16 @@ class EventsView(FlaskView):
 
     def current_month(self, requester, username):
         # get first and last days of the month
-        month_start = datetime.time.today().replace(day=1)
-        max_day_num = calendar.monthrange(first_day.year, first_day.month)[1]
+        month_start = datetime.datetime.today().replace(day=1, hour=0, minute=0)
+        max_day_num = calendar.monthrange(month_start.year, month_start.month)[1]
         month_end = datetime.datetime.now().replace(day=max_day_num, hour=23, minute=59)
         # get those days as regular numbers
-        month_start = calendar.timegm(first_date.timetuple())
+        month_start = calendar.timegm(month_start.timetuple())
         month_end = calendar.timegm(month_end.timetuple())
         print('Searching for username [{}] events between [{} and [{}]'.format(
             username, month_start, month_end))
         events = self.event_store.get_events(username, month_start, month_end)
-        return list(filter(lambda e: EventsView.__is_visible(requester, e), events))
+        return str(list(filter(lambda e: EventsView.__is_visible(requester, e), events)))
         
 
     def __is_visible(username, event):
