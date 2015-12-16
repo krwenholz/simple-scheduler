@@ -1,3 +1,27 @@
+Getting started
+===============
+Do you want to run this? You'll need:
+* An AWS account and some permissions for two DynamoDB tables
+** One table, "simple-scheduler-users", with a string hash key, 
+  username, and a string range key, type
+** Another table, "simple-scheduler-events", with a string hash
+  key, username, and a number range key, starttime
+* An IAM user with permissions for the dynamodb tables on your host
+* Add the lambda function in the lambdas folder to an AWS Lambda
+  function reacting to streams off of the simple-scheduler-events
+  table.
+* Clone this repo, run "node install", "bower install", and 
+  "pip install" (I highly recommend using a virtual environment
+  for pip)
+* You should now be able to run "python application.py" and navigate
+  to localhost:5000
+
+In a less time pressured world, this would be set up for you with a
+nice script and run in the Docker file. It's almost there, but AWS
+configurations and permissions are hard.
+
+Thoughts and musings
+====================
 Given the time constraints (spare time over less than two weeks), 
 I'm reasonably happy with how this turned out. I've built a solid
 REST interface on a framework I'm only cursorily familiar with
@@ -27,4 +51,7 @@ places, recording metrics on my DynamoDB dependency and my response
 times, and recording client side metrics. I also struggled getting
 Docker (new to me) to bend to my will. I'm reasonably happy with
 how this is deploying, but it could use some work to be a light
-operational burden.
+operational burden: AWS configuration with something like 
+[Terraform](http://terraform.io/), monitors, proper logging, 
+a continuous deployment mechanism (I experimented with CodePipelines,
+but it wasn't up to the task).
