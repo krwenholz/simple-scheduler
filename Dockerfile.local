@@ -8,4 +8,3 @@ RUN apt-get install --yes npm nodejs
 RUN update-alternatives --install /usr/bin/node nodejs /usr/bin/nodejs 100
 RUN npm install
 RUN node_modules/bower/bin/bower install --allow-root
-RUN node_modules/gulp/bin/gulp.js
