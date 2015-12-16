@@ -40,8 +40,7 @@ class UserStore:
             response = self.users_table.query( 
                     KeyConditionExpression=Key('username').eq(username))['Items']
             if len(response) == 0: return None
-            # small hack wrapping response with dict to make consistent from_ddb method
-            return User.from_ddb({'Item': response[0]})
+            return User.from_dict(response[0])
         except (NoVersionFound, ResourceLoadException, RetriesExceededError) as e:
             return None
 

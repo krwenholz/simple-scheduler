@@ -1,5 +1,4 @@
 from collections import namedtuple
-import time
 
 class Event(namedtuple('Event', 'username starttime partner')):
     """
@@ -19,9 +18,6 @@ class Event(namedtuple('Event', 'username starttime partner')):
     def from_ddb(ddb_response):
         event_dict = ddb_response['Item']
         return Event.from_dict(event_dict)
-    
-    def nice_starttime(self):
-        return time.ctime(self.starttime)
 
     def as_dict(self):
         """

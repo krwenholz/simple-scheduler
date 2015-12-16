@@ -19,8 +19,7 @@
             <div class="alert alert-success" role="alert">
                 {{ message }}
             </div>
-        {% endif %}
-        {% if user_type == 'client' %}
+        {% elif user_type == 'client' %}
             {% if specialist == None %}
                 Let's get you scheduled for this month! Please name your specialist.
                 <form action="{{ url_for('VisualView:post') }}" method="post">
@@ -30,7 +29,7 @@
                     </div>
                     <input type="hidden" name="username" value="{{ username }}">
                     <input type="hidden" name="user-type" value="client">
-                    <button type="submit" class="btn btn-default">Submit</button>
+                    <button type="submit" class="btn btn-sm btn-default">Submit</button>
                 </form>
             {% else %}
                 {% if events|length == 0 %}
@@ -40,12 +39,12 @@
                         set up on their calendar.
                     </div>
                 {% elif booked_event != None %}
-                    You have a meeting booked for {{ event.nice_starttime }} with {{ specialist }}
+                    You have a meeting booked for {{ booked_event.nice_starttime }} with {{ specialist }}
                     <form action="{{ url_for('VisualView:delete_event') }}" method="post">
                         <input type="hidden" name="username" value="{{ username }}">
-                        <input type="hidden" name="starttime" value="{{ event.starttime }}">
+                        <input type="hidden" name="starttime" value="{{ booked_event.starttime }}">
                         <input type="hidden" name="user-type" value="client">
-                        <button type="submit" class="btn btn-danger">Delete this meeting</button>
+                        <button type="submit" class="btn btn-sm btn-danger">Delete this meeting</button>
                     </form>
                 {% else %}
                     <h3>Openings with your specialist:</h3>
@@ -57,7 +56,7 @@
                             <input type="hidden" name="username" value="{{ username }}">
                             <input type="hidden" name="specialist" value="{{ specialist }}">
                             <input type="hidden" name="starttime" value="{{ event.starttime }}">
-                            <button type="submit" class="btn btn-info">Select this time</button>
+                            <button type="submit" class="btn btn-sm btn-info">Select this time</button>
                         </form>
                         </li>
                     {% endfor %}
@@ -74,27 +73,28 @@
                         <input type="hidden" name="username" value="{{ username }}">
                         <input type="hidden" name="starttime" value="{{ event.starttime }}">
                         <input type="hidden" name="user-type" value="specialist">
-                        <button type="submit" class="btn btn-danger">Delete this meeting</button>
+                        <button type="submit" class="btn btn-sm btn-danger">Delete this meeting</button>
                     </form>
                     </li>
                 {% endfor %}
             </ul>
-            <h3>Add time</h3>
+            <h3>Add free time so clients can book you</h3>
             <form action="{{ url_for('VisualView:new_event') }}" method="post">
                 <div class="form-group">
                     <!-- TODO: This is mean that we display a raw number, but UI is hard -->
-                    <label for="event-time">Meeting time</label>
-                    <input type="text" class="form-control" name="event-time" placeholder="meeting time"
+                    <label for="starttime">Meeting time</label>
+                    <input type="text" class="form-control" name="starttime" placeholder="meeting time"
                         id="datetimepicker_unixtime">
                     <script type="text/javascript">
                         jQuery('#datetimepicker_unixtime').datetimepicker({
                           format:'unixtime'
                           });
                     </script>
+                    <input type="hidden" name="username" value="{{ username }}">
                 </div>
                 <input type="hidden" name="username" value="{{ username }}">
                 <input type="hidden" name="user-type" value="specialist">
-                <button type="submit" class="btn btn-default">Submit</button>
+                <button type="submit" class="btn btn-sm btn-default">Submit</button>
             </form>
         {% endif %}
     </div>

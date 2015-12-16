@@ -8,12 +8,15 @@ class User(namedtuple('User', 'username type email create_date')):
             raise ValueError('[{}] is not a valid User type'.format(user_type))
         return super().__new__(cls, username, user_type, email, create_date)
 
-    def from_ddb(ddb_response):
-        user_dict = ddb_response['Item']
+    def from_dict(user_dict):
         return User(user_dict['username'], 
                 user_dict['type'], 
                 user_dict['email'], 
                 user_dict['create_date'])
+
+    def from_ddb(ddb_response):
+        user_dict = ddb_response['Item']
+        return User.from_dict(user_dict)
 
     def as_dict(self):
         """
