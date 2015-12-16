@@ -1,7 +1,30 @@
-Design decisions
-================
+Given the time constraints (spare time over less than two weeks), 
+I'm reasonably happy with how this turned out. I've built a solid
+REST interface on a framework I'm only cursorily familiar with
+and come up with an architecture I can easily extend:
 
-Regrets
--------
-None! Just kidding.
-* I should have named it scheduling. It's much more accurate.
+* Flask provides the REST APIs sitting on top of two DynamoDB tables:
+  one for users and another for "events"
+* A Lambda function reads the stream of events from DynamoDB and keeps
+  user event lists in sync. This way, a user only has to wait on one
+  write to the events table, enabling a faster and more robust API.
+* The UI is currently a weak Jinja2 (more later) implementation that
+  doesn't really need to know anything about the underlying 
+  implementations.
+
+So why is that easily extensible? The REST interface makes it so I
+can build any UI I want. I went with Jinja2 because it was fast and
+I was running out of time. (I haven't used Jinja2 before, but I
+now realize much of my UI experience is baked into Amazon internal
+tools.) The other major component is the use of Lambda: by feeding
+off of the event stream from DynamoDB, I can asynchronously add
+all sorts of functionality including emails, iCal publishing, etc.
+
+The primary areas this falls short are in regards to the UI (already
+shamefully addressed) and the "production readiness". I should be
+using some proper Python logging to get messages in the correct
+places, recording metrics on my DynamoDB dependency and my response
+times, and recording client side metrics. I also struggled getting
+Docker (new to me) to bend to my will. I'm reasonably happy with
+how this is deploying, but it could use some work to be a light
+operational burden.
