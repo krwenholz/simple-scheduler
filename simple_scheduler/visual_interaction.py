@@ -8,8 +8,7 @@ import time
 
 class VisualView(FlaskView):
     """
-    Provides a templated, nice user interface for our app 
-    #TODO: This could/should be done on the client side with something like React
+    Provides a templated, terrible user interface for our app 
     """
     def __init__(self):
         self.users = UsersView()
@@ -32,12 +31,13 @@ class VisualView(FlaskView):
         if specialist != None:
             events = self.events.current_month(username, specialist)
             for event in events:
-                event['nice_starttime'] = time.ctime(event['starttime'])
                 if not Event.from_dict(event).is_free():
                     # the user looking at this page already has an appointment!
                     booked_event = event
         elif user_type == 'specialist':
             events = self.events.current_month(username, username)
+        for event in events:
+            event['nice_starttime'] = time.ctime(event['starttime'])
         return render_template('user_page.html',
                 username = username, 
                 specialist = specialist,
@@ -53,7 +53,6 @@ class VisualView(FlaskView):
         self.events.delete(username, username, starttime)
         return render_template('user_page.html',
                 username = username, 
-                user_type = user_type,
                 message = """You have successfully deleted your meeting for {}.
                 (Our hacky sysadmin suggests you go back and refresh the last page.)
                 """.format(time.ctime(starttime)))
