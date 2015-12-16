@@ -7,55 +7,39 @@
 <!-- styles -->
 <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='bower_components/bootstrap/dist/css/bootstrap.min.css') }}">
 <!-- scripts -->
-<script src="{{ url_for('static', filename='bower_components/react/react.min.js') }}"></script>
 <script src="{{ url_for('static', filename='bower_components/jquery/dist/jquery.min.js') }}"></script>
 <script src="{{ url_for('static', filename='bower_components/bootstrap/dist/js/bootstrap.min.js') }}"></script>
-<script src="{{ url_for('static', filename='bower_components/superagent/lib/client.js') }}"></script>
-<script src="{{ url_for('static', filename='scripts/js/main.js') }}"></script>
 </head>
 <body>
     <div class="container">
         <h1>Your Simple Scheduler</h1>
         <br>
         <h3>Sign in</h3>
-        <form id="login" action="login()">
+        <form action="{{ url_for('VisualView:post') }}" method="post">
             <div class="form-group">
-                <label for="username">Email address</label>
-                <input type="text" class="form-control" id="usernameInput" placeholder="username">
+                <label for="username">Username</label>
+                <input type="text" class="form-control" name="username" placeholder="username">
             </div>
             <button type="submit" class="btn btn-default">Submit</button>
         </form>
         <h3>Or create a user</h3>
-        <form id="create-user" action="create_user()">
+        <form action="{{ url_for('VisualView:post') }}" method="post">
             <div class="form-group">
                 <label for="username">Username</label>
-                <input type="text" class="form-control" id="newUsernameInput" placeholder="username">
+                <input type="text" class="form-control" name="username" placeholder="username">
             </div>
             <div class="form-group">
                 <label for="email">Email</label>
-                <input type="email" class="form-control" id="emailInput" placeholder="email">
+                <input type="email" class="form-control" name="email" placeholder="email">
             </div>
             <div class="form-group">
-                <input type="radio" name="user-type" value="client" checked>Male
+                <input type="radio" name="user-type" value="client" checked>Client
                 <br>
-                <input type="radio" name="user-type" value="specialist">Female
-            </form> 
-        </div>
-        <button type="submit" class="btn btn-default">Submit</button>
+                <input type="radio" name="user-type" value="specialist">Specialist
+            </div>
+            <button type="submit" class="btn btn-default">Submit</button>
         </form>
     </div>
-    <!-- scripts -->
-    <script src="{{ url_for('static', filename='bower_components/jquery/dist/jquery.min.js') }}"></script>
-    <script src="{{ url_for('static', filename='bower_components/bootstrap/dist/js/bootstrap.min.js') }}"></script>
-    <script type="javascript">
-        function login() {
-            console.log($('#login')).serialize();
-        }
-
-        function create_user() {
-            console.log($('#create-user')).serialize();
-        }
-    </script>
   </body>
 </html>
 

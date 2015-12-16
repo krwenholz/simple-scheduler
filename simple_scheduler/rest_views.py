@@ -17,8 +17,8 @@ class UsersView(FlaskView):
         self.user_store.create_user(User(username, user_type, email, str(datetime.datetime.now())))
         return 'success'
 
-    def get(self, user_type, username):
-        return str(self.user_store.get_user(user_type, username))
+    def get(self, username):
+        return self.user_store.get_user(username).as_dict()
 
 class EventsView(FlaskView):
     """
@@ -77,7 +77,7 @@ class EventsView(FlaskView):
         print('Searching for username [{}] events between [{} and [{}]'.format(
             username, month_start, month_end))
         events = self.event_store.get_events(username, month_start, month_end)
-        return str(list(filter(lambda e: EventsView.__is_visible(requester, e), events)))
+        return list(map(lambda e: e.as_dict(), filter(lambda e: EventsView.__is_visible(requester, e), events)))
         
 
     def __is_visible(username, event):

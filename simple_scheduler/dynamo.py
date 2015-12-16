@@ -35,12 +35,13 @@ class UserStore:
         connection = DdbConnection()
         self.users_table = connection.table('simple-scheduler-users')
 
-    def get_user(self, user_type, username):
+    def get_user(self, username):
         try:
-            response = self.users_table.get_item( 
-                    Key={'username': username, 'type': user_type})
-            if 'Item' not in response: return None
-            return User.from_ddb(response)
+            response = self.users_table.query( 
+                    KeyConditionExpression=Key('username').eq(username))['Items']
+            if len(response) == 0: return None
+            # small hack wrapping response with dict to make consistent from_ddb method
+            return User.from_ddb({'Item': response[0]})
         except (NoVersionFound, ResourceLoadException, RetriesExceededError) as e:
             return None
 

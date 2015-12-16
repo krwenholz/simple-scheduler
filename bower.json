@@ -19,5 +19,6 @@
   "dependencies": {
     "bootstrap": "~3.3.6",
     "jquery": "~2.1.4",
+    "datetimepicker": "~2.4.5"
   }
 }
