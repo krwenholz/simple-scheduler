@@ -3,7 +3,7 @@ from flask.ext.classy import FlaskView
 from simple_scheduler.dynamo import UserStore, EventStore
 from simple_scheduler.model.user import User
 from simple_scheduler.model.event import Event
-import datetime, calendar
+import datetime, calendar, logging
 
 class UsersView(FlaskView):
     """
@@ -75,7 +75,7 @@ class EventsView(FlaskView):
         # get those days as regular numbers
         month_start = calendar.timegm(month_start.timetuple())
         month_end = calendar.timegm(month_end.timetuple())
-        print('Searching for username [{}] events between [{} and [{}]'.format(
+        logging.info('Searching for username [{}] events between [{} and [{}]'.format(
             username, month_start, month_end))
         events = self.event_store.get_events(username, month_start, month_end)
         return list(map(lambda e: e.as_dict(), filter(lambda e: EventsView.__is_visible(requester, e), events)))

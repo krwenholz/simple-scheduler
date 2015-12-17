@@ -1,4 +1,4 @@
-import os
+import os, logging
 
 def setup():
     """
@@ -6,7 +6,7 @@ def setup():
     this file sets up those credentials.
     """
     if 'ACCESS_KEY' in os.environ and 'SECRET_KEY' in os.environ:
-        print('Found access and secret key in environment variables, so we can set up credentials')
+        logging.info('Found access and secret key in environment variables, so we can set up credentials')
         access_key = os.environ['ACCESS_KEY']
         secret_key = os.environ['SECRET_KEY']
 
@@ -19,6 +19,6 @@ def setup():
         with open(creds_file_name, 'w+') as creds_file:
             creds_file.write(creds_content)
 
-        print('Wrote AWS creds to [{}]'.format(creds_file_name))
+        logging.info('Wrote AWS creds to [{}]'.format(creds_file_name))
     else:
-        print('No AWS credentials to configure')
+        logging.info('No AWS credentials to configure')

@@ -2,7 +2,9 @@ from flask import Flask, render_template
 from simple_scheduler.rest_views import UsersView, EventsView
 from simple_scheduler.visual_interaction import VisualView
 from simple_scheduler import setup_aws
+import logging
 
+logging.basicConfig(filename='/tmp/simple_scheduler.log', level=logging.INFO)
 setup_aws.setup()
 
 template_path = 'simple_scheduler/templates'
@@ -17,4 +19,4 @@ def index():
     return render_template('index.html')
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run()
