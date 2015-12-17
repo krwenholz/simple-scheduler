@@ -2,9 +2,9 @@ from boto3.dynamodb.conditions import Key
 from boto3.exceptions import NoVersionFound, ResourceLoadException, RetriesExceededError
 from simple_scheduler.model.user import User
 from simple_scheduler.model.event import Event
-import boto3, os 
+import boto3
 
-#TODO: retry transient ddb errors (maybe done by boto3) and more intelligently
+#TODO: retry transient ddb errors (some done by boto3) and more intelligently
 # catch exceptions
 
 class DdbConnection:

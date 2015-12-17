@@ -4,8 +4,7 @@ from simple_scheduler.visual_interaction import VisualView
 from simple_scheduler import setup_aws
 import logging
 
-logging.basicConfig(filename='/tmp/simple_scheduler.log', level=logging.INFO)
-setup_aws.setup()
+logging.basicConfig(filename='/var/log/simple_scheduler.log', level=logging.INFO)
 
 template_path = 'simple_scheduler/templates'
 
