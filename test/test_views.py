@@ -10,13 +10,13 @@ from simple_scheduler.rest_views import UsersView, EventsView
 # User view tests
 ###########################################################################
 def prep_user_view(ddbMock):
-    def get_user(Key=None):
-        if Key['username'] == 'bobo' and Key['type'] == 'client':
-            return {'Item': {'username': 'bobo', 'type': 'client', 'email': 'bobo@coco.com', 'create_date': '2015-12-13 16:03:08.532168'}, 'ResponseMetadata': {'HTTPStatusCode': 200, 'RequestId': '1'}}
+    def query_user(KeyConditionExpression=None):
+        if KeyConditionExpression.__dict__['_values'][1] == 'bobo':
+            return {'Items': [{'username': 'bobo', 'type': 'client', 'email': 'bobo@coco.com', 'create_date': '2015-12-13 16:03:08.532168'}], 'ResponseMetadata': {'HTTPStatusCode': 200, 'RequestId': '1'}}
         else: 
-            return {'ResponseMetadata': {'gobble': 'gook'}}
+            return {'Items': [], 'ResponseMetadata': {'gobble': 'gook'}}
     fake_users_table = MagicMock()
-    fake_users_table.get_item.side_effect = get_user
+    fake_users_table.query.side_effect = query_user
     fake_users_table.put_item.return_value = None # just a success
     instance = ddbMock.return_value
     instance.table.return_value = fake_users_table
@@ -45,14 +45,14 @@ def test_bad_user_type(ddbMock):
 @patch('simple_scheduler.dynamo.DdbConnection')
 def test_get_user(ddbMock):
     users_view = prep_user_view(ddbMock)
-    user = users_view.get('client', 'bobo')
-    assert 'bobo' in user and 'client' in user
+    user = users_view.get('bobo')
+    assert 'bobo' == user['username'] and 'client' == user['type']
 
 @patch('simple_scheduler.dynamo.DdbConnection')
 def test_get_no_user(ddbMock):
     users_view = prep_user_view(ddbMock)
-    user = users_view.get('client', 'coco')
-    assert user == 'None'
+    user = users_view.get('coco')
+    assert user == None
 
 ###########################################################################
 # Event view tests

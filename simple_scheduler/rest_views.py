@@ -18,7 +18,8 @@ class UsersView(FlaskView):
         return 'success'
 
     def get(self, username):
-        return self.user_store.get_user(username).as_dict()
+        user = self.user_store.get_user(username)
+        return None if user == None else user.as_dict()
 
 class EventsView(FlaskView):
     """
